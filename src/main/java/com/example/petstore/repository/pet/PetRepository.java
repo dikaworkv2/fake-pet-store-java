@@ -15,7 +15,9 @@ public final class PetRepository implements PetRepositoryInterface {
 
     @Override
     public PetEntity getPetByID(int petID) {
-        return null;
+        return new PetEntity(
+
+        );
     }
 
     @Override

@@ -1,16 +1,24 @@
 package com.example.petstore.controller.pet;
 import com.example.petstore.entity.PetEntity;
+import com.example.petstore.factory.header.RequestFactory;
 import com.example.petstore.repository.pet.PetRepositoryInterface;
+import org.apache.coyote.Response;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 @RestController
 public final class PetController {
-    private final PetRepositoryInterface petRepo;
 
-    public PetController( PetRepositoryInterface petRepo) {
-        this.petRepo = petRepo;
+    private final RestTemplate restTemplate;
+
+    private final String baseURL = "https://petstore.swagger.io/v2";
+    public PetController(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
     @GetMapping("/hello")
@@ -19,14 +27,28 @@ public final class PetController {
     }
 
     @GetMapping("/pet/{petID}")
-    public String getPetByID(@PathVariable int petID) {
-        return "berhasil bro";
+    public ResponseEntity<PetEntity> getPetByID(@PathVariable long petID) {
+        String newURl = baseURL + "/pet/" + petID;
+        RequestEntity req = RequestFactory.shared.createRequest(HttpMethod.GET, newURl, null);
+        try {
+            ResponseEntity resp = restTemplate.exchange(req, PetEntity.class);
+            return resp;
+        } catch (RestClientException e) {
+            System.err.println("Error while making the API request: " + e.getMessage());
+            throw new PetNotFoundException("pet not found");
+        }
     }
 
     @PostMapping("/pet")
-    public String AddNewPet(@RequestBody PetEntity pet) {
-        PetEntity newPet = this.petRepo.insertNewPet(pet);
-        return "";
+    public ResponseEntity<PetEntity> AddNewPet(@RequestBody PetEntity reqBody) {
+        String newURl = baseURL + "/pet";
+        RequestEntity req = RequestFactory.shared.createRequest(HttpMethod.POST, newURl, reqBody);
+        try {
+            ResponseEntity resp = restTemplate.exchange(req, PetEntity.class);
+            return  resp;
+        } catch (RestClientException e) {
+            throw new PetIsNotInserted("cannot insert pet");
+        }
     }
 
     @ExceptionHandler(PetNotFoundException.class)
@@ -37,5 +59,13 @@ public final class PetController {
         public PetNotFoundException(String message) {
             super(message);
         }
+    }
+
+    @ExceptionHandler(PetIsNotInserted.class)
+    public ResponseEntity<String> handlePetIsNotInsertedExecption(PetIsNotInserted ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+    public static class PetIsNotInserted extends  RuntimeException {
+        public PetIsNotInserted(String message) { super(message);}
     }
 }
