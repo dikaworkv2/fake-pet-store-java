@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 public final class PetController {
@@ -17,6 +19,8 @@ public final class PetController {
     private final RestTemplate restTemplate;
 
     private final String baseURL = "https://petstore.swagger.io/v2";
+    private static final Logger logger = LoggerFactory.getLogger(PetController.class);
+
     public PetController(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
@@ -32,10 +36,14 @@ public final class PetController {
         RequestEntity req = RequestFactory.shared.createRequest(HttpMethod.GET, newURl, null);
         try {
             ResponseEntity resp = restTemplate.exchange(req, PetEntity.class);
+            logger.info("pet found");
             return resp;
         } catch (RestClientException e) {
-            System.err.println("Error while making the API request: " + e.getMessage());
+            logger.warn("Error while making the API request: " + e.getMessage());
             throw new PetNotFoundException("pet not found");
+        } catch (Exception e) {
+            logger.error("Error : " + e.getMessage());
+            throw new BadRequestException("Bad request");
         }
     }
 
@@ -45,9 +53,14 @@ public final class PetController {
         RequestEntity req = RequestFactory.shared.createRequest(HttpMethod.POST, newURl, reqBody);
         try {
             ResponseEntity resp = restTemplate.exchange(req, PetEntity.class);
+            logger.info("success add pet");
             return  resp;
         } catch (RestClientException e) {
+            logger.warn("Error while making the API request: " + e.getMessage());
             throw new PetIsNotInserted("cannot insert pet");
+        } catch (Exception e) {
+            logger.error("Error : " + e.getMessage());
+            throw new BadRequestException("Bad request");
         }
     }
 
@@ -67,5 +80,16 @@ public final class PetController {
     }
     public static class PetIsNotInserted extends  RuntimeException {
         public PetIsNotInserted(String message) { super(message);}
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<String> BadRequestExceptionHandler(PetIsNotInserted ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    public static class BadRequestException extends RuntimeException {
+        public BadRequestException(String message) {
+            super(message);
+        }
     }
 }
