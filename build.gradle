@@ -15,6 +15,17 @@ repositories {
     mavenCentral()
 }
 
+jar {
+    duplicatesStrategy = 'INCLUDE'
+    manifest {
+        attributes "Main-Class": "com.example.petstore.FakepetstoreApplication"
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

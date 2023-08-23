@@ -2,7 +2,7 @@ package com.example.petstore.controller.pet;
 import com.example.petstore.entity.PetEntity;
 import com.example.petstore.factory.header.RequestFactory;
 import com.example.petstore.repository.pet.PetRepositoryInterface;
-import org.apache.coyote.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
@@ -17,12 +17,15 @@ import org.slf4j.LoggerFactory;
 public final class PetController {
 
     private final RestTemplate restTemplate;
+    private final PetRepositoryInterface petrepo;
 
     private final String baseURL = "https://petstore.swagger.io/v2";
     private static final Logger logger = LoggerFactory.getLogger(PetController.class);
 
-    public PetController(RestTemplate restTemplate) {
+    @Autowired
+    public PetController(RestTemplate restTemplate, PetRepositoryInterface petrepo) {
         this.restTemplate = restTemplate;
+        this.petrepo = petrepo;
     }
 
     @GetMapping("/hello")

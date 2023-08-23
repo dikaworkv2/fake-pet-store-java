@@ -1,14 +1,10 @@
-# Use the official OpenJDK image as the base image
-FROM openjdk:15-jre-slim
+FROM openjdk:19-ea-11-jdk-bullseye
 
-# Set the working directory inside the container
-WORKDIR /app
-
-# Copy the JAR file from the target directory to the container's working directory
-COPY target/your-spring-boot-app.jar app.jar
+WORKDIR /pet-app
+COPY build/libs/fakepetstore-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose the port your Spring Boot app is listening on
-EXPOSE 8080
+EXPOSE 4417
 
 # Specify the command to run when the container starts
 CMD ["java", "-jar", "app.jar"]
