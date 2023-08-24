@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pet-app-service
+spec:
+  selector:
+    app: pet-app
+  ports:
+    - protocol: TCP
+      port: 80  # Port to expose externally
+      targetPort: 4417  # Port your application is running on in the pod
+  type: NodePort

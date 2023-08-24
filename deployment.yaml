@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pet-app-deployment
+  labels:
+    app: pet-app
+spec:
+  replicas: 1 # Adjust the number of replicas as needed
+  selector:
+    matchLabels:
+      app: pet-app
+  template:
+    metadata:
+      labels:
+        app: pet-app
+    spec:
+      containers:
+        - name: pet-app-container
+          image: 18220015/pet-app-fake:latest
+          ports:
+            - containerPort: 4417
