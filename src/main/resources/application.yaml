@@ -1,2 +1,3 @@
-server:
-  port: 4417
+logging:
+  file:
+    name: "fakestore.log"

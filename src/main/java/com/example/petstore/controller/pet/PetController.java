@@ -28,7 +28,7 @@ public final class PetController {
         this.petrepo = petrepo;
     }
 
-    @GetMapping("/hello")
+    @GetMapping("")
     public String GetHello() {
         return "hello, world!";
     }
