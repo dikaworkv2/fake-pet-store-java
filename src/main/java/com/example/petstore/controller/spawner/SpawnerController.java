@@ -32,4 +32,9 @@ public final class SpawnerController {
         logger.debug("spawn debug");
         return "success";
     }
+
+    @GetMapping("/spawn/destroy")
+    public String spawnDestroy() {
+       return SpawnerRepo.shared.getMessage();
+    }
 }
