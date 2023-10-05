@@ -35,7 +35,6 @@ public final class SpawnerController {
 
     @GetMapping("/spawn/destroy")
     public String spawnDestroy() {
-        double desrtoy = 0/0;
-        return "destroyed";
+       return SpawnerRepo.shared.getMessage();
     }
 }
