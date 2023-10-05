@@ -32,4 +32,10 @@ public final class SpawnerController {
         logger.debug("spawn debug");
         return "success";
     }
+
+    @GetMapping("/spawn/destroy")
+    public String spawnDestroy() {
+        double desrtoy = 0/0;
+        return "destroyed";
+    }
 }
